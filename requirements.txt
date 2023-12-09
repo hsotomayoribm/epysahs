@@ -1,0 +1,9 @@
+Flask
+pandas
+ibm-db
+ibm_cloud_sdk_core
+requests
+numpy
+python-dotenv
+scikit-learn
+ibm_watson_machine_learning

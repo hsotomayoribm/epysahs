@@ -1,0 +1,176 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Traducción de Lenguaje Natural a SQL con Respuesta Humanizada",
+    "description": "API para traducir preguntas en lenguaje natural a consultas SQL y proporcionar respuestas humanizadas. También incluye la categorización y descripción de columnas en una base de datos.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/entidades": {
+      "post": {
+        "summary": "Extracción de Entidades",
+        "description": "Se encarga de extraer las entidades relevantes de la pregunta del usuario.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "pregunta": "Cuál es el total de ventas hasta la fecha"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Éxito",
+            "content": {
+              "application/json": {
+                "example": {
+                  "clasificacion": "Válida"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clasificacion": {
+      "post": {
+        "summary": "Clasificación de la Pregunta",
+        "description": "Clasifica la pregunta del usuario para determinar su validez.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "pregunta": "Cuál es el total de ventas hasta la fecha",
+                "entidades": "entidad:total de ventas, fecha: hasta la fecha"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Éxito",
+            "content": {
+              "application/json": {
+                "example": {
+                  "clasificacion": "Válida"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sql": {
+      "post": {
+        "summary": "Creación de la Sentencia SQL",
+        "description": "Genera la sentencia SQL para responder la pregunta del usuario.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "pregunta": "Cuál es el total de ventas hasta la fecha"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Éxito",
+            "content": {
+              "application/json": {
+                "example": {
+                  "resultado_sql": "TOTAL_VENTAS : 3379.31\n",
+                  "clasificacion": "exactamente igual",
+                  "sentencia_sql": "\nSELECT sum(product_price) as total_ventas FROM sales"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/respuesta": {
+      "post": {
+        "summary": "Respuesta Humanizada del Asistente",
+        "description": "Genera la respuesta final del asistente dependiendo de la clasificación de la pregunta.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "examples": {
+                "camino_1": {
+                  "value": {
+                    "pregunta": "Cuál es el número de ventas realizadas por cada vendedor de la tienda",
+                    "clasificacion": "Válida",
+                    "resultado_sql": "SELLER_ID : 101, VENTAS : 7\n SELLER_ID : 102, VENTAS : 4\n SELLER_ID : 103, VENTAS : 5\n SELLER_ID : 104, VENTAS : 4"
+                  }
+                },
+                "camino_2": {
+                  "value": {
+                    "pregunta": "¿Cuántos años tienes?",
+                    "clasificacion": "No Válida"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Éxito",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "camino_1": {
+                    "value": {
+                      "respuesta_humanizada": "El número de ventas del vendedor con ID 101 es de 7 ventas, el vendedor con ID 102 tiene 4 ventas, el vendedor con ID 103 tiene 5 ventas y el vendedor con ID 104 tiene 4 ventas."
+                    }
+                  },
+                  "camino_2": {
+                    "value": {
+                      "respuesta_humanizada": "Soy un chatbot, por lo cual no tengo edad. Puedo ayudarte en alguna otra cosa."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categorizar_datos": {
+      "post": {
+        "summary": "Categorización y Descripción de Columnas",
+        "description": "Define la categoría de la información de la columna y crea una descripción para la misma.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "nombre_columna": "RUT Cliente",
+                "datos": "1202934-4"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Éxito",
+            "content": {
+              "application/json": {
+                "example": {
+                  "Categoria": "Cliente",
+                  "Descripcion": "El conjunto de datos indica el rut del cliente y sirve para identificar al cliente."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
